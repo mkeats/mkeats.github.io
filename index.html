@@ -1,20 +1,42 @@
 <html>
-    <head>
-        <title>Omni Chat</title>
-    </head>
-    <body>
-        <script type='text/javascript' src='https://c.gla3-phx.gus.salesforce.com/content/g/js/51.0/deployment.js'></script>
-        <script type='text/javascript'>
-        liveagent.init('https://d.gla3-phx.gus.salesforce.com/chat', '572B00000005k7D', '00DB0000000caQt');
-        </script>
+  <head>
+    <title>Browser API Proxy</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      const controller = new AbortController();
+      const signal = controller.signal;
 
-        <a id="liveagent_button_online_573B00000005uVA" href="javascript://Chat" style="display: none;" onclick="liveagent.startChat('573B00000005uVA')">Start Chat</a>
-        <div id="liveagent_button_offline_573B00000005uVA" style="display: none;">Chat Offline<!-- Offline Chat Content --></div><script type="text/javascript">
-            if (!window._laq) { window._laq = []; }
-            window._laq.push(function(){liveagent.showWhenOnline('573B00000005uVA', document.getElementById('liveagent_button_online_573B00000005uVA'));
-            liveagent.showWhenOffline('573B00000005uVA', document.getElementById('liveagent_button_offline_573B00000005uVA'));
-            });
-        </script>
-        
-    </body>
+      async function init() {
+        try {
+          if ((await IdleDetector.requestPermission()) != 'granted') {
+            console.error("Idle detection permission denied.");
+            return;
+          }
+
+          const idleDetector = new IdleDetector();
+
+          idleDetector.addEventListener("change", () => {
+            const userState = idleDetector.userState;
+            const screenState = idleDetector.screenState;
+            console.log(`Idle change: ${userState}, ${screenState}.`);
+          });
+
+          await idleDetector.start({
+            threshold: 60_000,
+            signal,
+          });
+          console.log("IdleDetector is active.");
+        } catch (err) {
+          // Deal with initialization errors like permission denied,
+          // running outside of top-level frame, etc.
+          console.error(err.name, err.message);
+        }
+      }
+
+    </script>
+
+    <button onclick="init()">Start</button>
+
+  </body>
 </html>
