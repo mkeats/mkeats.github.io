@@ -7,14 +7,6 @@
       const controller = new AbortController();
       const signal = controller.signal;
 
-      window.addEventListener(
-        "message",
-        (event) => {
-          console.log(event);
-        },
-        false
-      );
-
       async function init() {
         try {
           if ((await IdleDetector.requestPermission()) != "granted") {
@@ -28,6 +20,7 @@
             const userState = idleDetector.userState;
             const screenState = idleDetector.screenState;
             console.log(`Idle change: ${userState}, ${screenState}.`);
+            window.parent.postMessage({foo:'bar'}, 'https://mk-gs0-1-dev-ed.lightning.force.com')
           });
 
           await idleDetector.start({
