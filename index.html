@@ -7,7 +7,30 @@
       const controller = new AbortController();
       const signal = controller.signal;
 
-      async function init() {
+      const originUrl =
+        window.location != window.parent.location
+          ? document.referrer
+          : document.location.href;
+
+      function init() {
+        window.parent.postMessage(
+          {
+            type: "APIBRIDGE_READY",
+          },
+          originUrl
+        );
+        window.addEventListener(
+          "message",
+          (event) => {
+            if (event.data.type == "APIBRIDGE_START") {
+              start();
+            }
+          },
+          false
+        );
+      }
+
+      async function start() {
         try {
           if ((await IdleDetector.requestPermission()) != "granted") {
             console.error("Idle detection permission denied.");
@@ -20,7 +43,14 @@
             const userState = idleDetector.userState;
             const screenState = idleDetector.screenState;
             console.log(`Idle change: ${userState}, ${screenState}.`);
-            window.parent.postMessage({foo:'bar'}, 'https://mk-gs0-1-dev-ed.lightning.force.com')
+            window.parent.postMessage(
+              {
+                type: "APIBRIDGE",
+                userState: idleDetector.userState,
+                screenState: idleDetector.screenState,
+              },
+              originUrl
+            );
           });
 
           await idleDetector.start({
@@ -34,8 +64,10 @@
           console.error(err.name, err.message);
         }
       }
+
+      init();
     </script>
 
-    <button onclick="init()">Start</button>
+    <button onclick="start()">Start</button>
   </body>
 </html>
