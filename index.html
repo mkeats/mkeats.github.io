@@ -7,9 +7,17 @@
       const controller = new AbortController();
       const signal = controller.signal;
 
+      window.addEventListener(
+        "message",
+        (event) => {
+          console.log(event);
+        },
+        false
+      );
+
       async function init() {
         try {
-          if ((await IdleDetector.requestPermission()) != 'granted') {
+          if ((await IdleDetector.requestPermission()) != "granted") {
             console.error("Idle detection permission denied.");
             return;
           }
@@ -33,10 +41,8 @@
           console.error(err.name, err.message);
         }
       }
-
     </script>
 
     <button onclick="init()">Start</button>
-
   </body>
 </html>
