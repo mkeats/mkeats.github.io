@@ -30,13 +30,23 @@
         );
       }
 
+      async function requestPermission() {
+        try {
+            if ((await IdleDetector.requestPermission()) != "granted") {
+              console.error("Idle detection permission denied.");
+              return;
+            }
+  
+            console.log("IdleDetector permision is allowed.");
+          } catch (err) {
+            // Deal with initialization errors like permission denied,
+            // running outside of top-level frame, etc.
+            console.error(err.name, err.message);
+          }
+      }
+
       async function start() {
         try {
-          if ((await IdleDetector.requestPermission()) != "granted") {
-            console.error("Idle detection permission denied.");
-            return;
-          }
-
           const idleDetector = new IdleDetector();
 
           idleDetector.addEventListener("change", () => {
@@ -68,6 +78,6 @@
       init();
     </script>
 
-    <button onclick="start()">Start</button>
+    <button onclick="requestPermission()">Request Permission</button>
   </body>
 </html>
