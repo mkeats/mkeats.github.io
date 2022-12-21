@@ -65,7 +65,7 @@
           });
 
           await idleDetector.start({
-            threshold: 60_000,
+            threshold: 5_000,
             signal,
           });
           console.log("IdleDetector is active.");
